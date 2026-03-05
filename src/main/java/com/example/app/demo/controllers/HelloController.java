@@ -13,6 +13,7 @@ public class HelloController {
         this.helloService = helloService;
     }
 
+// Endpoint to return a greeting message
     @GetMapping("/hello")
     public String hello() {
         return helloService.getHelloMessage();
