@@ -13,7 +13,7 @@ public class HelloController {
         this.helloService = helloService;
     }
 
-// Change 5
+// Change 6
     @GetMapping("/hello")
     public String hello() {
         return helloService.getHelloMessage();
