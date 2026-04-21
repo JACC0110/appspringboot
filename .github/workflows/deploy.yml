@@ -18,6 +18,6 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           export $(cat /home/ec2-user/registry.env)
-          cd /home/ec2-user/app
+          cd /home/ec2-user
           docker compose pull
           docker compose up -d
