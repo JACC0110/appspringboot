@@ -21,7 +21,7 @@ jobs:
 
           echo "Waiting for images in registry..."
 
-          for i in {1..30}; do
+          for i in {1..45}; do
             TAGS=$(curl -s http://$REGISTRY_HOST:5000/v2/appspringboot/tags/list)
 
             if echo "$TAGS" | grep -q '"latest"' && echo "$TAGS" | grep -q '"develop"'; then
@@ -41,7 +41,7 @@ jobs:
           export $(cat /home/ec2-user/registry.env)
           cd /home/ec2-user
 
-          for i in {1..10}; do
+          for i in {1..20}; do
             docker compose pull && break
             echo "Retry pull $i..."
             sleep 5
