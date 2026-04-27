@@ -41,10 +41,9 @@ jobs:
           export $(cat /home/ec2-user/registry.env)
           cd /home/ec2-user
 
-          for i in {1..20}; do
+          for i in {1..5}; do
             docker compose pull && break
             echo "Retry pull $i..."
             sleep 5
           done
-
           docker compose up -d
