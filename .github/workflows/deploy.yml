@@ -15,9 +15,36 @@ jobs:
           export $(cat /home/ec2-user/registry.env)
           echo "Registry is $REGISTRY_HOST"
 
-      - name: Deploy with Docker Compose
+      - name: Wait for images (latest & develop)
+        run: |
+          export $(cat /home/ec2-user/registry.env)
+
+          echo "Waiting for images in registry..."
+
+          for i in {1..30}; do
+            TAGS=$(curl -s http://$REGISTRY_HOST:5000/v2/appspringboot/tags/list)
+
+            if echo "$TAGS" | grep -q '"latest"' && echo "$TAGS" | grep -q '"develop"'; then
+              echo "Both images found!"
+              exit 0
+            fi
+
+            echo "Waiting... ($i)"
+            sleep 5
+          done
+
+          echo "Timeout waiting for images"
+          exit 1
+
+      - name: Deploy with retry
         run: |
           export $(cat /home/ec2-user/registry.env)
           cd /home/ec2-user
-          docker compose pull
+
+          for i in {1..10}; do
+            docker compose pull && break
+            echo "Retry pull $i..."
+            sleep 5
+          done
+
           docker compose up -d
