@@ -7,6 +7,6 @@ public class HelloServiceImpl implements HelloService {
 
     @Override
     public String getHelloMessage() {
-        return "Proyecto Final \"\"Administración de Sistemas Operativos y DEVOPS\"\nEstudiante: Jesús Angel Camposeco Cárdenas";
+        return "test 34";
     }
 }
