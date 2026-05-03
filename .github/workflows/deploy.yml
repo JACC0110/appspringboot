@@ -42,7 +42,7 @@ jobs:
           cd /home/ec2-user
 
           for i in {1..5}; do
-            docker compose pull --no-cache && break
+            docker compose pull && break
             echo "Retry pull $i..."
             sleep 5
           done
