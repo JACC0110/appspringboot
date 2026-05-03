@@ -40,6 +40,10 @@ jobs:
         run: |
           export $(cat /home/ec2-user/registry.env)
           cd /home/ec2-user
+          docker compose down
+          docker image rm ${REGISTRY_HOST}:5000/appspringboot:latest || true
+          docker image rm ${REGISTRY_HOST}:5000/appspringboot:develop || true
+
 
           for i in {1..5}; do
             docker compose pull && break
