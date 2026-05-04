@@ -10,6 +10,9 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Get commit tag
         run: echo "TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
@@ -22,7 +25,7 @@ jobs:
         run: |
           export $(cat /home/ec2-user/registry.env)
 
-          echo "Waiting for image"
+          echo "Waiting for image $TAG"
 
           for i in {1..45}; do
             TAGS=$(curl -s http://$REGISTRY_HOST:5000/v2/appspringboot/tags/list)
@@ -48,7 +51,6 @@ jobs:
           export PROD_TAG=$TAG
 
           docker compose down
-
           docker image prune -af || true
 
           for i in {1..10}; do
@@ -56,4 +58,5 @@ jobs:
             echo "Retry pull $i..."
             sleep 5
           done
+
           docker compose up -d --force-recreate
