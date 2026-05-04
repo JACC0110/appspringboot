@@ -56,5 +56,4 @@ jobs:
             echo "Retry pull $i..."
             sleep 5
           done
-
           docker compose up -d --force-recreate
