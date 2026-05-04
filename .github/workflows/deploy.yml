@@ -10,22 +10,25 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Get commit tag
+        run: echo "TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Load registry IP
         run: |
           export $(cat /home/ec2-user/registry.env)
           echo "Registry is $REGISTRY_HOST"
 
-      - name: Wait for images (latest & develop)
+      - name: Wait for image
         run: |
           export $(cat /home/ec2-user/registry.env)
 
-          echo "Waiting for images in registry..."
+          echo "Waiting for image"
 
           for i in {1..45}; do
             TAGS=$(curl -s http://$REGISTRY_HOST:5000/v2/appspringboot/tags/list)
 
-            if echo "$TAGS" | grep -q '"latest"' && echo "$TAGS" | grep -q '"develop"'; then
-              echo "Both images found!"
+            if echo "$TAGS" | grep -q "\"$TAG\""; then
+              echo "Image $TAG found!"
               exit 0
             fi
 
@@ -33,21 +36,25 @@ jobs:
             sleep 5
           done
 
-          echo "Timeout waiting for images"
+          echo "Timeout waiting for image"
           exit 1
 
       - name: Deploy with retry
         run: |
           export $(cat /home/ec2-user/registry.env)
           cd /home/ec2-user
-          docker compose down
-          docker image rm ${REGISTRY_HOST}:5000/appspringboot:latest || true
-          docker image rm ${REGISTRY_HOST}:5000/appspringboot:develop || true
 
+          export DEV_TAG=$TAG
+          export PROD_TAG=$TAG
+
+          docker compose down
+
+          docker image prune -af || true
 
           for i in {1..10}; do
-            docker compose pull && break
+            docker pull ${REGISTRY_HOST}:5000/appspringboot:$TAG && break
             echo "Retry pull $i..."
             sleep 5
           done
+
           docker compose up -d --force-recreate
