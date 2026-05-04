@@ -45,7 +45,7 @@ jobs:
           docker image rm ${REGISTRY_HOST}:5000/appspringboot:develop || true
 
 
-          for i in {1..5}; do
+          for i in {1..10}; do
             docker compose pull && break
             echo "Retry pull $i..."
             sleep 5
